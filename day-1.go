@@ -65,11 +65,15 @@ func main() {
 	}
 
 	var max int
+	var pos int
+	pos = 1
 	for _, sum := range sums {
 		if sum > max {
 			max = sum
+			pos = pos + 1
 		}
 	}
 
 	fmt.Println(max)
+	fmt.Println(pos)
 }
