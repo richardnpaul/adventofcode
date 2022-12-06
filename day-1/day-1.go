@@ -1,5 +1,5 @@
-// Write a golang function that takes a file containing a list of numbers separated by newlines and sums groups of numbers separated by double newlines
-// for example, given the following file:
+// Write a golang function that takes a file containing a list of numbers separated by newlines
+// and sums groups of numbers separated by double newlines for example, given the following file:
 // 1000
 // 2000
 // 3000
