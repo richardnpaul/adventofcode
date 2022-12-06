@@ -74,6 +74,5 @@ func main() {
 		}
 	}
 
-	fmt.Println(max)
 	fmt.Println(pos)
 }
