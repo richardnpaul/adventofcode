@@ -25,6 +25,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -64,15 +65,15 @@ func main() {
 		}
 	}
 
-	var max int
-	var pos int
-	pos = 1
-	for _, sum := range sums {
-		if sum > max {
-			max = sum
-			pos = pos + 1
-		}
-	}
+	var max, part2 int
 
-	fmt.Println(pos)
+	sort.Slice(sums, func(i, j int) bool {
+		return sums[i] < sums[j]
+	})
+
+	max = sums[len(sums)-1]
+	part2 = sums[len(sums)-1] + sums[len(sums)-2] + sums[len(sums)-3]
+
+	fmt.Println(max)
+	fmt.Println(part2)
 }
