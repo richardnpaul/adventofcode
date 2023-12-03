@@ -42,6 +42,7 @@ def get_possible_games(game_dict):
         possible_games.append(int(game_no))
     return possible_games
 
+
 with open(sys.argv[1]) as f:
     lines = f.readlines()
     game_dict = {}
