@@ -4,14 +4,14 @@
 import sys
 
 
-def clean_line(line):
+def clean_line(line) -> str:
     stripped_line = line.strip()
-    nogameline = stripped_line.replace('Game ', '')
-    replace_semi_colon_line = nogameline.replace(';', ',')
+    no_game_line = stripped_line.replace('Game ', '')
+    replace_semi_colon_line = no_game_line.replace(';', ',')
     return replace_semi_colon_line
 
 
-def create_games_dict(line, game_dict):
+def create_games_dict(line, game_dict) -> tuple[int, dict]:
     game_no = line.split(':')[0]
     line = line.split(':')[1]
     line = line.split(',')
@@ -27,7 +27,7 @@ def create_games_dict(line, game_dict):
     return game_no, game_dict
 
 
-def get_possible_games(game_dict):
+def get_possible_games(game_dict) -> list:
     possible_games = []
     for game_no, game_dict in game_dict.items():
         if 'red' in game_dict:
