@@ -18,103 +18,52 @@
 # ......755.
 # ...$.*....
 # .664.598..
+# .11+.+11..
 
 import re
-from sys import argv
+
+def file_input_to_list_of_strings(file_name: str) -> list:
+    """Takes in a file name and returns a matrix of lists of lists of characters for each line in
+    the file"""
+    with open(file_name, 'r') as f:
+        return [str(line.rstrip()) for line in f.readlines()]
 
 
-with open(argv[1], 'r') as f:
-    lines = f.readlines()
-    chars = []
-    for line in lines:
-        chars.extend(list(line))
-    sorted_list = sorted(set(chars))
-
-ignore_list = ['0', '1', '2', '3', '4', '5', '\n', '6', '7', '8', '9', '.']
-symbols = [i for i in sorted_list if i not in ignore_list]
-
-grid = []
-
-with open(argv[1]) as f:
-    lines = f.readlines()
-    for line in lines:
-        line = line.strip()
-        list_line = list(line)
-        grid.append(list_line)
+def get_symbols(list_of_strings):
+    ignore_list = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.']
+    symbols = [c for string in list_of_strings for c in string if c not in ignore_list]
+    return sorted(set(symbols))
 
 
-rows, cols = len(grid), len(grid[0])  # This cols ref expects that all rows have the same length
-numbers_found = []
+def main():
+    input_file = 'input.txt'
+    str_list: list(str) = file_input_to_list_of_strings(input_file)
+    symbols: list(str) = get_symbols(str_list)
+    numbers: list(str) = [re.findall(r'\d+', ''.join(row)) for row in str_list]
+    all_matches = []
+    match_list = []
 
+    for index, number_row in enumerate(numbers):
+        print(f"index: {index}")
+        for number in number_row:
+            m = re.finditer(number, str_list[index])
+            for match in m:
+                if any(i for i in match_list if match.span() == i.span() and match.group() == i.group()):
+                    continue
+                match_list.append(match)
+                start = match.start() - 1 if match.start() - 1 >= 0 else match.start()
+                end = match.end() if match.end() + 1 == len(str_list[index]) else match.end() + 1
+                subset_list = [
+                    str_list[index - 1][start:end] if index - 1 >= 0 else "",
+                    str_list[index][start:end],
+                    "" if index + 1 == len(str_list) else str_list[index + 1][start:end]
+                ]
+                # print(subset_list)
+                if any(symbol in ''.join(subset_list) for symbol in symbols):
+                    print(f'match string = {"".join(subset_list)}')
+                    all_matches.append(int(number))
 
-def all_numbers_in_row_with_indices(row, lst):
-    numbers_with_indices = []
+    # for match in match_list: print(match)
+    return print(sum(all_matches))
 
-    for index, element in enumerate(lst):
-        if element.isdigit():
-            numbers_with_indices.append((row, index, int(element)))
-
-    print(f"Numbers with indices: {numbers_with_indices}")
-    return numbers_with_indices
-
-
-def get_numbers_with_symbol_hits() -> list:
-    number_hits = []
-
-    for row in range(len(grid)):
-        for column in range(len(grid[row])):
-            number_hits = all_numbers_in_row_with_indices(row, grid[row][column])
-
-    print(f"Number of hits: {number_hits}")
-    return number_hits
-
-
-def get_hits(matrix, row, col):
-    rows, cols = len(matrix), len(matrix[0])
-    hits = []
-
-    # Horizontal and Vertical hits
-    for i, j in [(row-1, col), (row+1, col), (row, col-1), (row, col+1)]:
-        if 0 <= i < rows and 0 <= j < cols and matrix[i][j] in symbols:
-            hits.append((i, j))
-
-    # Diagonal hits
-    for i, j in [(row-1, col-1), (row-1, col+1), (row+1, col-1), (row+1, col+1)]:
-        if 0 <= i < rows and 0 <= j < cols and matrix[i][j] in symbols:
-            hits.append((i, j))
-
-    return hits
-
-
-def get_full_number(row, index):
-
-    arr = grid[row]
-
-    if 0 <= index < len(arr) and arr[index].isdigit():
-        start, end = index, index
-
-        # Expand to the left
-        while start > 0 and arr[start - 1].isdigit():
-            start -= 1
-
-        # Expand to the right
-        while end < len(arr) - 1 and arr[end + 1].isdigit():
-            end += 1
-
-        # Return the contiguous string of digits
-        return int(''.join(arr[start:end + 1]))
-
-    return None
-
-
-last_number = None
-for row, col in get_numbers_with_symbol_hits():
-    for n_row, n_col in get_hits(grid, row, col):
-        number = get_full_number(n_row, n_col)
-        numbers_found.append(int(number))
-        last_number = (n_row, n_col)
-
-
-# print(sorted(get_all_neighbours(number_hits)))
-print(numbers_found)
-print(f"Sum of engine parts: {sum(numbers_found)}")
+main()
